@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Catalogue Carrelage Sélection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+
+/* Layout : barre fixe en haut, grille de fiches produits, panneau latéral de mise en ligne. Noir et blanc stricts, une seule couleur d'état par statut. */
+:root{
+  --bg:#ffffff; --fg:#0a0a0a; --muted:#5c5c5c; --line:#e3e3e3; --soft:#f4f4f4; --inv-bg:#0a0a0a; --inv-fg:#ffffff;
+  --ok:#0f7a3a; --warn:#a15c00; --bad:#b3122e;
+  --display:"Archivo",ui-sans-serif,system-ui,sans-serif; --body:"Archivo",ui-sans-serif,system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a0a0a;--fg:#f5f5f5;--muted:#a3a3a3;--line:#262626;--soft:#151515;--inv-bg:#f5f5f5;--inv-fg:#0a0a0a;--ok:#4cc97f;--warn:#f0a83c;--bad:#ff6b7f;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a0a0a;--fg:#f5f5f5;--muted:#a3a3a3;--line:#262626;--soft:#151515;--inv-bg:#f5f5f5;--inv-fg:#0a0a0a;--ok:#4cc97f;--warn:#f0a83c;--bad:#ff6b7f;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--fg)}
+body{font-family:var(--body);font-size:15px;line-height:1.45;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 48px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.wrap{max-width:1320px;margin:0 auto}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);padding-block:18px 14px;display:flex;flex-direction:column;gap:14px}
+.brandrow{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.mark{display:flex;align-items:center;gap:12px}
+.logo{width:40px;height:40px;border:2.5px solid var(--fg);display:grid;place-items:center;font-family:var(--display);font-weight:900;font-size:15px;letter-spacing:-.02em}
+h1{margin:0;font-family:var(--display);font-weight:850;font-stretch:112%;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;line-height:1;text-wrap:balance}
+.sub{font-size:12px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
+.search{flex:1 1 280px;max-width:420px;position:relative}
+.search input{width:100%;height:44px;border:1.5px solid var(--fg);background:var(--bg);padding:0 14px 0 40px;border-radius:0}
+.search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%)}
+.stats{display:flex;gap:10px;flex-wrap:wrap}
+.stat{flex:1 1 150px;border:1px solid var(--line);padding:10px 14px;display:flex;align-items:baseline;justify-content:space-between;gap:10px;background:var(--bg);cursor:pointer;text-align:left;transition:background .25s var(--ease),color .25s var(--ease),border-color .25s var(--ease)}
+.stat b{font-family:var(--display);font-size:26px;font-weight:850;font-variant-numeric:tabular-nums;line-height:1}
+.stat span{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:inherit;opacity:.75}
+.stat[aria-pressed="true"]{background:var(--inv-bg);color:var(--inv-fg);border-color:var(--inv-bg)}
+.stat:hover{border-color:var(--fg)}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.chip{flex:0 0 auto;height:34px;padding:0 14px;border:1px solid var(--line);background:var(--bg);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s var(--ease)}
+.chip:hover{border-color:var(--fg)}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+main{padding-top:22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.card{position:relative;border:1px solid var(--line);background:var(--bg);padding:18px;display:flex;flex-direction:column;gap:14px;cursor:pointer;text-align:left;transition:transform .35s var(--ease),border-color .25s var(--ease),box-shadow .35s var(--ease);animation:rise .55s var(--ease) both;animation-delay:calc(var(--i,0) * 35ms);min-width:0}
+.card:hover{transform:translateY(-3px);border-color:var(--fg);box-shadow:0 10px 0 -4px var(--fg)}
+@keyframes rise{from{opacity:.25;transform:translateY(14px)}to{opacity:1;transform:none}}
+.card .eyebrow{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.brand{font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.serie{display:block;font-family:var(--display);font-weight:800;font-stretch:108%;font-size:24px;line-height:1.05;letter-spacing:-.01em;margin:0}
+.fmt{display:inline-flex;align-items:center;height:26px;padding:0 10px;background:var(--fg);color:var(--bg);font-family:var(--mono);font-size:12.5px;font-weight:600;align-self:flex-start}
+.specs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line);padding-top:12px;gap:8px}
+.specs>span{display:flex;flex-direction:column;gap:2px}
+.specs .t{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.specs .d{font-family:var(--mono);font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.price{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);padding-top:12px}
+.price .lbl{font-size:12px;color:var(--muted)}
+.price .val{font-family:var(--display);font-weight:800;font-size:20px;font-variant-numeric:tabular-nums}
+.price .val.none{font-family:var(--body);font-weight:600;font-size:13px;color:var(--warn)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.pill i{width:8px;height:8px;border-radius:50%;background:currentColor;display:inline-block}
+.s-ready{color:var(--ok)} .s-price{color:var(--warn)} .s-miss{color:var(--bad)} .s-live{color:var(--fg)}
+.s-live i{background:var(--fg);box-shadow:0 0 0 3px var(--soft)}
+.empty{border:1.5px dashed var(--line);padding:48px 24px;text-align:center;color:var(--muted);display:flex;flex-direction:column;gap:8px;align-items:center}
+.empty strong{color:var(--fg);font-family:var(--display);font-size:20px}
+/* Panneau */
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .3s var(--ease);z-index:20}
+.scrim.on{opacity:1;pointer-events:auto}
+aside.panel{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--bg);border-left:2px solid var(--fg);z-index:21;transform:translateX(102%);transition:transform .45s var(--ease);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-right:env(safe-area-inset-right,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+aside.panel.on{transform:none}
+.ph{padding:22px 24px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.ph h2{margin:4px 0 8px;font-family:var(--display);font-weight:850;font-stretch:110%;font-size:30px;line-height:1;letter-spacing:-.02em}
+.x{width:44px;height:44px;border:1.5px solid var(--fg);background:var(--bg);cursor:pointer;display:grid;place-items:center;flex:0 0 auto}
+.x:hover{background:var(--fg);color:var(--bg)}
+.pb{overflow-y:auto;padding:20px 24px 32px;display:flex;flex-direction:column;gap:22px}
+.sec h3{margin:0 0 10px;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.woo{background:var(--inv-bg);color:var(--inv-fg);padding:18px;display:flex;flex-direction:column;gap:2px}
+.woo h3{color:inherit;opacity:.7}
+.wrow{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:12px;padding:10px 0;border-top:1px solid color-mix(in srgb,var(--inv-fg) 18%,transparent)}
+.wrow:first-of-type{border-top:0}
+.wrow .k{font-size:13.5px}
+.wrow .k small{display:block;opacity:.65;font-size:11.5px}
+.wrow .v{font-family:var(--mono);font-size:18px;font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.copy{height:34px;padding:0 12px;border:1px solid var(--inv-fg);background:transparent;color:var(--inv-fg);font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;transition:all .2s var(--ease)}
+.copy:hover{background:var(--inv-fg);color:var(--inv-bg)}
+.copy.done{background:var(--inv-fg);color:var(--inv-bg)}
+.copy:disabled{opacity:.35;cursor:not-allowed}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:600}
+.inwrap{display:flex;align-items:center;border:1.5px solid var(--fg);height:52px}
+.inwrap input{flex:1;min-width:0;border:0;background:transparent;height:100%;padding:0 14px;font-family:var(--mono);font-size:20px;font-weight:600}
+.inwrap input:focus{outline:none}
+.inwrap:focus-within{box-shadow:0 0 0 3px var(--soft),0 0 0 4px var(--fg)}
+.inwrap span{padding:0 14px;font-size:13px;color:var(--muted);white-space:nowrap}
+.calc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-top:10px}
+.calc div{background:var(--bg);padding:12px 14px}
+.calc dt{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.calc dd{margin:2px 0 0;font-family:var(--mono);font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
+.saved{font-size:12px;color:var(--muted);min-height:16px;transition:opacity .3s}
+.tbl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);border:1px solid var(--line)}
+.tbl div{padding:10px 12px;border-top:1px solid var(--line);font-size:14px;min-width:0;overflow-wrap:anywhere}
+.tbl div:nth-child(-n+2){border-top:0}
+.tbl div:nth-child(odd){color:var(--muted);background:var(--soft)}
+.tbl div:nth-child(even){font-weight:600}
+.colors{display:flex;flex-wrap:wrap;gap:6px}
+.colors span{border:1px solid var(--fg);padding:5px 10px;font-size:13px;font-weight:600}
+.note{border-left:3px solid var(--warn);padding:10px 14px;background:var(--soft);font-size:14px}
+.note.bad{border-color:var(--bad)}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;border:1.5px solid var(--fg);padding:14px 16px;cursor:pointer;background:var(--bg);width:100%;text-align:left}
+.toggle .sw{width:46px;height:26px;border:1.5px solid var(--fg);position:relative;flex:0 0 auto;transition:background .25s var(--ease)}
+.toggle .sw::after{content:"";position:absolute;top:3px;left:3px;width:17px;height:17px;background:var(--fg);transition:transform .3s var(--ease),background .25s}
+.toggle[aria-checked="true"] .sw{background:var(--fg)}
+.toggle[aria-checked="true"] .sw::after{transform:translateX(20px);background:var(--bg)}
+.src a{color:var(--fg);font-size:13px;overflow-wrap:anywhere}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,40px);background:var(--fg);color:var(--bg);padding:12px 18px;font-weight:600;font-size:14px;opacity:0;transition:all .35s var(--ease);z-index:30;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media (max-width:560px){.ph h2{font-size:24px}.wrow{grid-template-columns:1fr auto}.wrow .copy{grid-column:1/-1;width:100%}.pb,.ph{padding-left:18px;padding-right:18px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+
+[hidden]{display:none!important}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.btn{height:44px;padding:0 16px;border:1.5px solid var(--fg);background:var(--fg);color:var(--bg);font-weight:700;font-size:14px;cursor:pointer;transition:transform .2s var(--ease),background .2s,color .2s}
+.btn:hover{transform:translateY(-1px)}
+.btn.ghost{background:var(--bg);color:var(--fg)}
+.btn.ghost:hover{background:var(--fg);color:var(--bg)}
+.btn.red{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn.redtxt{color:var(--bad);border-color:var(--bad)}
+.btn.redtxt:hover{background:var(--bad);color:#fff}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.form .wide{grid-column:1/-1}
+.form input,.form textarea{width:100%;border:1.5px solid var(--fg);background:var(--bg);padding:10px 12px;font-size:15px;border-radius:0}
+.form input{height:46px}
+.form input:focus,.form textarea:focus{outline:none;box-shadow:0 0 0 3px var(--soft),0 0 0 4px var(--fg)}
+.err{color:var(--bad);font-size:14px;font-weight:600;min-height:0}
+.danger{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:14px}
+@media (max-width:560px){.form{grid-template-columns:1fr}}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brandrow">
+      <div class="mark">
+        <div class="logo" aria-hidden="true">CS</div>
+        <div>
+          <h1>Catalogue produits</h1>
+          <div class="sub">Carrelage Sélection · mise en ligne WooCommerce</div>
+        </div>
+      </div>
+      <div class="tools">
+        <button class="btn" id="add">+ Ajouter un produit</button>
+        <button class="btn ghost" id="export" title="Télécharger une copie de sauvegarde">Sauvegarder</button>
+        <button class="btn ghost" id="importBtn" title="Recharger une sauvegarde">Importer</button>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+      </div>
+      <div class="search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        
+        <input id="q" type="search" placeholder="Rechercher une série, un format, un coloris" autocomplete="off">
+      </div>
+    </div>
+    <div class="stats" id="stats" role="group" aria-label="Filtrer par statut"></div>
+    <div class="chips" id="brands" role="group" aria-label="Filtrer par marque"></div>
+  </header>
+  <main>
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="empty">
+      <strong>Chargement du catalogue</strong>
+    </div>
+  </main>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="panel" id="panel" aria-hidden="true" aria-labelledby="pTitle">
+  <div class="ph">
+    <div>
+      <div class="brand" id="pBrand"></div>
+      <h2 id="pTitle"></h2>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span class="fmt" id="pFmt"></span><span id="pStatus"></span></div>
+    </div>
+    <button class="x" id="close" aria-label="Fermer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  </div>
+  <div class="pb" id="pBody"></div>
+</aside>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+(function(){
+  const TVA=0.20, KEY="cs-catalogue-v1";
+  const SEED=[{"ordre": 1, "marque": "Verde 1999", "serie": "Tufo", "format": "Multisize (1×20x20, 2×20x40, 2×40x40, 1×40x60,8)", "coloris": ["Gold"], "finition": "Naturel, bords naturels ; version R11", "usage": "Sol et mur, int. et ext.", "glissance": "R10 ; version R11", "epaisseur": 10, "pieces": 6, "m2": 0.723, "kg": 16, "note": "Boîte = composition multisize de 6 pièces. Existe aussi en 20x20, 20x40, 40x40, 40x60,8 et 60x120 vendus séparément.", "source": "https://www.caemdordini.it/storage/197134/Verde1999-Tufo-catalogo-2025.pdf", "prixM2HT": null, "enLigne": false, "id": "verde-1999-tufo-multisize-120x20-220x40-240x40-140x60-8"}, {"ordre": 2, "marque": "Verde 1999", "serie": "Lapis", "format": "100x100 rectifié", "coloris": ["Bianco", "Beige", "Corda", "Grigio", "Antracite"], "finition": "Rectifié ; version R11", "usage": "Sol et mur, intérieur", "glissance": "R10 / R11 selon version", "epaisseur": 8.5, "pieces": 2, "m2": 2, "kg": 38.63, "note": "Lecture du catalogue ambiguë : 38,63 kg pour 8,5 mm et 48 m²/palette indiquent 2 pièces = 2 m² par boîte (19,3 kg/m², cohérent avec les autres formats). À confirmer avec Verde 1999 avant saisie.", "source": "https://www.caemdordini.it/storage/197124/Verde1999-Lapis-catalogo-2025.pdf", "prixM2HT": null, "enLigne": false, "id": "verde-1999-lapis-100x100-rectifie"}, {"ordre": 3, "marque": "Verde 1999", "serie": "Lapis 2 cm", "format": "100x100 rectifié R11 2 cm", "coloris": ["Bianco", "Beige", "Corda", "Grigio (R11 2 cm)"], "finition": "R11 antidérapant", "usage": "Extérieur (dalle 2 cm)", "glissance": "R11", "epaisseur": 20, "pieces": 1, "m2": 1, "kg": 43.9, "note": "À garder seulement si vous vendez la version extérieure 2 cm.", "source": "https://www.caemdordini.it/storage/197124/Verde1999-Lapis-catalogo-2025.pdf", "prixM2HT": null, "enLigne": false, "id": "verde-1999-lapis-2-cm-100x100-rectifie-r11-2-cm"}, {"ordre": 4, "marque": "Baldocer", "serie": "Unik", "format": "60x60 rectifié", "coloris": ["Ivory", "Ash (Natural et Anti-slip)"], "finition": "Mat (Natural) ou Anti-slip", "usage": "Polyvalent sol et mur", "glissance": "Natural : classe 1 ; Anti-slip : classe 3", "epaisseur": null, "pieces": 3, "m2": 1.08, "kg": 22, "note": "Grès cérame. PEI 4 (Ivory Anti-slip : PEI 5). Épaisseur non publiée.", "source": "https://baldocer.com/en/product/unik/60X60/", "prixM2HT": null, "enLigne": false, "id": "baldocer-unik-60x60-rectifie"}, {"ordre": 5, "marque": "Baldocer", "serie": "Unik", "format": "30x90 rectifié", "coloris": ["Ivory", "Ash", "Taupe", "Grey + décors Klit"], "finition": "Mat", "usage": "Faïence murale (pâte blanche)", "glissance": "Non applicable (mur)", "epaisseur": null, "pieces": 4, "m2": 1.08, "kg": 20.5, "note": "Mur uniquement. Pose avec système de nivellement recommandée.", "source": "https://baldocer.com/en/product/unik/30X90/pdf/", "prixM2HT": null, "enLigne": false, "id": "baldocer-unik-30x90-rectifie"}, {"ordre": 6, "marque": "Baldocer", "serie": "Sequoya", "format": "20x120 rectifié", "coloris": ["Maple", "Almond", "Oak", "Cedar", "Walnut"], "finition": "Mat, effet bois", "usage": "Polyvalent sol et mur", "glissance": "R9, classe 1", "epaisseur": null, "pieces": 5, "m2": 1.2, "kg": 24, "note": "La fiche indique 45 boîtes/palette mais 57,6 m² et 1 152 kg/palette, soit 48 boîtes. Retenu : 48 (à confirmer).", "source": "https://baldocer.com/en/product/sequoya-maple-20x120/", "prixM2HT": null, "enLigne": false, "id": "baldocer-sequoya-20x120-rectifie"}, {"ordre": 7, "marque": "Baldocer", "serie": "Ducale", "format": "20x120 rectifié", "coloris": ["Cedar", "Moon", "Henna", "Grey (+ Anti-slip)"], "finition": "Mat, relief, effet bois", "usage": "Polyvalent sol et mur", "glissance": "R10, classe 1", "epaisseur": null, "pieces": 5, "m2": 1.2, "kg": 24, "note": "Même incohérence que Sequoya (45 vs 48 boîtes/palette). Retenu : 48 (à confirmer).", "source": "https://baldocer.com/producto/ducale-cedar-20x120/pdf/", "prixM2HT": null, "enLigne": false, "id": "baldocer-ducale-20x120-rectifie"}, {"ordre": 8, "marque": "Baldocer", "serie": "Montmartre", "format": "30x90 rectifié", "coloris": ["Ciel", "Sable", "Menthe", "Terre", "Vert", "Bleu + décors (Fleurs, Bouquet, Forêt, Sigma)"], "finition": "Satiné", "usage": "Faïence murale (pâte blanche)", "glissance": "Non applicable (mur)", "epaisseur": null, "pieces": 4, "m2": 1.08, "kg": 20.5, "note": "Mur uniquement.", "source": "https://baldocer.com/en/product/montmartre/30X90/", "prixM2HT": null, "enLigne": false, "id": "baldocer-montmartre-30x90-rectifie"}, {"ordre": 9, "marque": "Baldocer", "serie": "Série 80x80 illisible (« Mital » ?)", "format": "80x80", "coloris": [], "finition": null, "usage": null, "glissance": null, "epaisseur": null, "pieces": null, "m2": null, "kg": null, "note": "Nom non identifié dans le catalogue Baldocer. Me donner le nom exact.", "source": null, "prixM2HT": null, "enLigne": false, "id": "baldocer-serie-80x80-illisible-mital-80x80"}, {"ordre": 10, "marque": "Tau Cerámica", "serie": "Lema Wall", "format": "30x90 rectifié", "coloris": ["White", "Pearl", "Silver (+ RLV relief)"], "finition": "Mat", "usage": "Faïence murale (pâte blanche)", "glissance": "Non applicable (mur)", "epaisseur": null, "pieces": 5, "m2": 1.35, "kg": 20.22, "note": "Conditionnement relevé sur Lema White ; identique par format chez Tau.", "source": "https://www.tauceramica.com/en/product/lema-white-30x90-rec/", "prixM2HT": null, "enLigne": false, "id": "tau-ceramica-lema-wall-30x90-rectifie"}, {"ordre": 11, "marque": "Tau Cerámica", "serie": "Palomastone Wall", "format": "33,3x100 rectifié", "coloris": ["White (+ RLV Neo, RLV Via)"], "finition": "Mat", "usage": "Faïence murale", "glissance": "Non applicable (mur)", "epaisseur": null, "pieces": null, "m2": null, "kg": null, "note": "Fiche produit Tau inaccessible pendant la recherche. Conditionnement à demander.", "source": "https://www.tauceramica.com/en/series/palomastone-wall/", "prixM2HT": null, "enLigne": false, "id": "tau-ceramica-palomastone-wall-33-3x100-rectifie"}, {"ordre": 12, "marque": "Tau Cerámica", "serie": "Palazzo", "format": "40x120 rectifié", "coloris": ["Calacatta (+ RLV, décors DC)"], "finition": "Mat, effet marbre", "usage": "Faïence murale (pâte blanche)", "glissance": "Non applicable (mur)", "epaisseur": 10.8, "pieces": 3, "m2": 1.44, "kg": 27.5, "note": "Seulement 20 boîtes/palette.", "source": "https://www.tauceramica.com/en/product/palazzo-calacatta-40x120-rec/", "prixM2HT": null, "enLigne": false, "id": "tau-ceramica-palazzo-40x120-rectifie"}, {"ordre": 13, "marque": "Tuscania", "serie": "Continental", "format": "80x80 rectifié", "coloris": ["Camel", "Dark grey", "Sand", "Smoke", "Taupe", "White"], "finition": "Mat ; version Soft", "usage": "Sol et mur, intérieur", "glissance": "R10 ; Soft : R9", "epaisseur": 9, "pieces": 2, "m2": 1.28, "kg": 24.77, "note": null, "source": "https://tuscaniagres.it/wp-content/uploads/2026/05/TUSCANIA_CATALOGO_CONTINENTAL_05_26.pdf", "prixM2HT": null, "enLigne": false, "id": "tuscania-continental-80x80-rectifie"}, {"ordre": 14, "marque": "Tuscania", "serie": "Continental", "format": "61x61 rectifié", "coloris": ["Camel", "Dark grey", "Sand", "Taupe", "White"], "finition": "Mat ; version Soft", "usage": "Sol et mur, intérieur", "glissance": "R10 ; Soft : R9", "epaisseur": 9, "pieces": 4, "m2": 1.49, "kg": 29, "note": "Existe en Outdoor R11 (Sand, Smoke, Taupe) : conditionnement non publié.", "source": "https://tuscaniagres.it/wp-content/uploads/2026/05/TUSCANIA_CATALOGO_CONTINENTAL_05_26.pdf", "prixM2HT": null, "enLigne": false, "id": "tuscania-continental-61x61-rectifie"}, {"ordre": 15, "marque": "Tuscania", "serie": "My S'tile", "format": "90x90 rectifié", "coloris": ["My Camel", "My Grey", "My Sand", "My White"], "finition": "Mat", "usage": "Sol et mur, intérieur", "glissance": "R10 ; Outdoor R11", "epaisseur": 9, "pieces": 2, "m2": 1.62, "kg": 31.25, "note": "Outdoor 90x90 (Grey, Sand) : conditionnement non publié.", "source": "https://tuscaniagres.it/wp-content/uploads/2026/05/TUSCANIA_CATALOGO_MY-S_TILE_04_26.pdf", "prixM2HT": null, "enLigne": false, "id": "tuscania-my-s-tile-90x90-rectifie"}, {"ordre": 16, "marque": "Tuscania", "serie": "My S'tile", "format": "61x61 rectifié", "coloris": ["My Camel", "My Grey", "My Sand", "My White"], "finition": "Mat", "usage": "Sol et mur, intérieur", "glissance": "R10", "epaisseur": 9, "pieces": 4, "m2": 1.49, "kg": 29, "note": null, "source": "https://tuscaniagres.it/wp-content/uploads/2026/05/TUSCANIA_CATALOGO_MY-S_TILE_04_26.pdf", "prixM2HT": null, "enLigne": false, "id": "tuscania-my-s-tile-61x61-rectifie"}, {"ordre": 17, "marque": "Tuscania", "serie": "La Leccese", "format": "61x61 rectifié", "coloris": ["Almond", "Avorio"], "finition": "Mat, effet pierre", "usage": "Intérieur ; version Outdoor", "glissance": "R9 ; Outdoor R11", "epaisseur": 9, "pieces": 4, "m2": 1.49, "kg": 29, "note": "Outdoor 61x61 : conditionnement non publié. Gamme Opus Romano.", "source": "https://tuscaniagres.it/wp-content/uploads/2026/05/TUSCANIA_CATALOGO_OPUS-ROMANO_04_26.pdf", "prixM2HT": null, "enLigne": false, "id": "tuscania-la-leccese-61x61-rectifie"}, {"ordre": 18, "marque": "Tuscania", "serie": "Natura", "format": "20,2x122,2 rectifié", "coloris": ["Betulla", "Castagno", "Ciliegio", "Frassino", "Magnolia"], "finition": "Mat, effet bois", "usage": "Sol et mur, intérieur", "glissance": "R10 ; Outdoor R11 (Betulla, Castagno, Frassino)", "epaisseur": 9, "pieces": 5, "m2": 1.23, "kg": 23.51, "note": "Existe aussi en version Outdoor R11 (Betulla, Castagno, Frassino).", "source": "https://tuscaniagres.it/wp-content/uploads/2026/05/TUSCANIA_CATALOGO_NATURA_04_26.pdf", "prixM2HT": null, "enLigne": false, "id": "tuscania-natura-20-2x122-2-rectifie"}, {"ordre": 19, "marque": "Tuscania", "serie": "North Wind", "format": "20,2x122,2 rectifié", "coloris": ["Brown", "Grey", "Ivory", "Melange", "Oak"], "finition": "Mat, effet bois", "usage": "Sol et mur, intérieur", "glissance": "R10 ; Outdoor R11 (Brown)", "epaisseur": 9, "pieces": 5, "m2": 1.23, "kg": 23.51, "note": null, "source": "https://tuscaniagres.it/wp-content/uploads/2026/05/TUSCANIA_CATALOGO_NORTH-WIND_04_26.pdf", "prixM2HT": null, "enLigne": false, "id": "tuscania-north-wind-20-2x122-2-rectifie"}, {"ordre": 20, "marque": "Mariner", "serie": "Wales", "format": "60x60 et 60x120", "coloris": [], "finition": null, "usage": null, "glissance": null, "epaisseur": null, "pieces": null, "m2": null, "kg": null, "note": "Non trouvé en ligne.", "source": null, "prixM2HT": null, "enLigne": false, "id": "mariner-wales-60x60-et-60x120"}, {"ordre": 21, "marque": "Mariner", "serie": "Theory", "format": "60x60 et 60x120", "coloris": [], "finition": null, "usage": null, "glissance": null, "epaisseur": null, "pieces": null, "m2": null, "kg": null, "note": "Non trouvé en ligne.", "source": null, "prixM2HT": null, "enLigne": false, "id": "mariner-theory-60x60-et-60x120"}, {"ordre": 22, "marque": "Capri", "serie": "Storica", "format": "60x120 et 60x60", "coloris": [], "finition": null, "usage": null, "glissance": null, "epaisseur": null, "pieces": null, "m2": null, "kg": null, "note": "Fabricant non identifié avec certitude.", "source": null, "prixM2HT": null, "enLigne": false, "id": "capri-marque-a-confirmer-storica-60x120-et-60x60"}, {"ordre": 23, "marque": "Capri", "serie": "Brera", "format": "60x120 et 60x60", "coloris": [], "finition": null, "usage": null, "glissance": null, "epaisseur": null, "pieces": null, "m2": null, "kg": null, "note": "Fabricant non identifié avec certitude.", "source": null, "prixM2HT": null, "enLigne": false, "id": "capri-marque-a-confirmer-brera-60x120-et-60x60"}, {"ordre": 24, "marque": "Etile", "serie": "Sutile", "format": "80x80", "coloris": ["Marfil", "Gris (Pulido) ; Blanco", "Perla à confirmer"], "finition": "Poli (Pulido)", "usage": "Sol et mur", "glissance": null, "epaisseur": null, "pieces": null, "m2": null, "kg": null, "note": "Conditionnement non publié.", "source": "https://en.etile.es/", "prixM2HT": null, "enLigne": false, "id": "etile-sutile-80x80"}, {"ordre": 25, "marque": "Etile", "serie": "Always", "format": "80x80", "coloris": ["Blanc (Pulido, Natural)"], "finition": "Poli ou Natural", "usage": null, "glissance": null, "epaisseur": null, "pieces": null, "m2": null, "kg": null, "note": "Un revendeur russe indique 2 pièces, 1,28 m², 49 kg : poids incohérent (38 kg/m²), non retenu.", "source": "https://en.etile.es/", "prixM2HT": null, "enLigne": false, "id": "etile-always-80x80"}, {"ordre": 26, "marque": "Etile", "serie": "Borghini", "format": "60x120", "coloris": [], "finition": null, "usage": null, "glissance": null, "epaisseur": null, "pieces": null, "m2": null, "kg": null, "note": "Absent du site Etile.", "source": null, "prixM2HT": null, "enLigne": false, "id": "etile-borghini-60x120"}, {"ordre": 27, "marque": "Etile", "serie": "Manhattan", "format": "60x120 rectifié", "coloris": ["Natural : Earth", "Ocean", "Dark ; Pulido : Earth", "Ocean", "Midnight"], "finition": "Natural (mat) ou Pulido (poli)", "usage": "Sol et mur", "glissance": null, "epaisseur": null, "pieces": 2, "m2": 1.44, "kg": 35, "note": "Données d'un revendeur, pas du fabricant : à confirmer avec Etile avant de saisir le poids.", "source": "https://www.badkamerdepot.be/vloertegel-etile-manhattan-60x120-cm-natural-dark-doosinhoud-1-44-m2", "prixM2HT": null, "enLigne": false, "id": "etile-manhattan-60x120-rectifie"}, {"ordre": 28, "marque": "Paul & Co", "serie": "Oakthree", "format": "20x120 (ou 30x120 ?)", "coloris": [], "finition": "Effet bois", "usage": null, "glissance": null, "epaisseur": null, "pieces": null, "m2": null, "kg": null, "note": "Le fabricant annonce un 30x120. Vérifier le format exact.", "source": "https://www.ceramica.info/en/prodotto-galleria/oakthree/", "prixM2HT": null, "enLigne": false, "id": "paul-co-oakthree-20x120-ou-30x120"}, {"ordre": 29, "marque": "Paul & Co", "serie": "Airock", "format": "90x90 et 60x120", "coloris": [], "finition": "Effet pierre", "usage": "Sol et mur, int. et ext.", "glissance": null, "epaisseur": null, "pieces": null, "m2": null, "kg": null, "note": "Conditionnement non publié.", "source": "https://www.ceramica.info/en/prodotto-galleria/airock/", "prixM2HT": null, "enLigne": false, "id": "paul-co-airock-90x90-et-60x120"}, {"ordre": 30, "marque": "Intermatex", "serie": "Cosmo Aqua", "format": "Format à préciser", "coloris": [], "finition": null, "usage": null, "glissance": null, "epaisseur": null, "pieces": null, "m2": null, "kg": null, "note": "Non trouvé.", "source": null, "prixM2HT": null, "enLigne": false, "id": "intermatex-cosmo-aqua-none"}, {"ordre": 31, "marque": "Intermatex", "serie": "Onice Bianco", "format": "Format à préciser", "coloris": [], "finition": null, "usage": null, "glissance": null, "epaisseur": null, "pieces": null, "m2": null, "kg": null, "note": "Non trouvé.", "source": null, "prixM2HT": null, "enLigne": false, "id": "intermatex-onice-bianco-none"}, {"ordre": 32, "marque": "Intermatex", "serie": "Pompeya", "format": "Format à préciser", "coloris": [], "finition": null, "usage": null, "glissance": null, "epaisseur": null, "pieces": null, "m2": null, "kg": null, "note": "Non trouvé.", "source": null, "prixM2HT": null, "enLigne": false, "id": "intermatex-pompeya-none"}, {"ordre": 33, "marque": "Exclusive", "serie": "Industrial", "format": "60x120", "coloris": [], "finition": null, "usage": null, "glissance": null, "epaisseur": null, "pieces": null, "m2": null, "kg": null, "note": "Marque non identifiée.", "source": null, "prixM2HT": null, "enLigne": false, "id": "exclusive-marque-a-confirmer-industrial-60x120"}, {"ordre": 34, "marque": "Exclusive", "serie": "St Tropez", "format": "40x60 + multiformat", "coloris": [], "finition": null, "usage": null, "glissance": null, "epaisseur": null, "pieces": null, "m2": null, "kg": null, "note": "Marque non identifiée.", "source": null, "prixM2HT": null, "enLigne": false, "id": "exclusive-marque-a-confirmer-st-tropez-40x60-multiformat"}];
+  const state={items:[],q:"",brand:"Toutes",status:"all",open:null,edit:false,confirmDel:false};
+  const $=s=>document.querySelector(s);
+  const grid=$("#grid"),empty=$("#empty"),statsEl=$("#stats"),brandsEl=$("#brands");
+
+  const n=v=>typeof v==="number"&&isFinite(v);
+  const eur=v=>n(v)?v.toLocaleString("fr-FR",{minimumFractionDigits:2,maximumFractionDigits:2})+" €":"—";
+  const num=(v,d=2)=>n(v)?v.toLocaleString("fr-FR",{minimumFractionDigits:d,maximumFractionDigits:d}):"—";
+  const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const toNum=s=>{const r=String(s??"").replace(/\s/g,"").replace(",",".");if(r==="")return null;const v=Number(r);return isFinite(v)?v:NaN};
+  const inNum=v=>n(v)?String(v).replace(".",","):"";
+
+  // Stockage local
+  function load(){
+    try{const raw=localStorage.getItem(KEY);if(raw){const d=JSON.parse(raw);if(Array.isArray(d))return d}}catch(_){}
+    return JSON.parse(JSON.stringify(SEED));
+  }
+  let saveOk=true;
+  function save(){
+    try{localStorage.setItem(KEY,JSON.stringify(state.items));saveOk=true}catch(_){saveOk=false}
+    return saveOk;
+  }
+
+  function status(p){
+    if(p.enLigne) return {k:"live",t:"En ligne",c:"s-live"};
+    if(!n(p.kg)||!n(p.m2)) return {k:"miss",t:"Infos manquantes",c:"s-miss"};
+    if(!n(p.prixM2HT)) return {k:"price",t:"Prix à saisir",c:"s-price"};
+    return {k:"ready",t:"Prêt à mettre en ligne",c:"s-ready"};
+  }
+  const pill=s=>`<span class="pill ${s.c}"><i></i>${s.t}</span>`;
+
+  const FILTERS=[["all","Tous"],["ready","Prêts"],["price","Prix à saisir"],["miss","Infos manquantes"],["live","En ligne"]];
+  function renderStats(){
+    const c={all:state.items.length,ready:0,price:0,miss:0,live:0};
+    state.items.forEach(p=>c[status(p).k]++);
+    statsEl.innerHTML=FILTERS.map(([k,t])=>`<button class="stat" data-s="${k}" aria-pressed="${state.status===k}"><span>${t}</span><b>${c[k]}</b></button>`).join("");
+  }
+  function renderBrands(){
+    const b=["Toutes",...[...new Set(state.items.map(p=>p.marque||"Sans marque"))].sort((a,b)=>a.localeCompare(b,"fr"))];
+    if(!b.includes(state.brand)) state.brand="Toutes";
+    brandsEl.innerHTML=b.map(x=>`<button class="chip" data-b="${esc(x)}" aria-pressed="${state.brand===x}">${esc(x)}</button>`).join("");
+  }
+  function visible(){
+    const q=state.q.trim().toLowerCase();
+    return state.items.filter(p=>{
+      if(state.brand!=="Toutes"&&(p.marque||"Sans marque")!==state.brand) return false;
+      if(state.status!=="all"&&status(p).k!==state.status) return false;
+      if(!q) return true;
+      return [p.marque,p.serie,p.format,(p.coloris||[]).join(" ")].join(" ").toLowerCase().includes(q);
+    });
+  }
+  function renderGrid(){
+    const list=visible();
+    if(!list.length){grid.innerHTML="";empty.hidden=false;empty.innerHTML=state.items.length?"<strong>Aucun produit</strong><span>Aucun produit ne correspond à ce filtre. Changez la recherche ou le statut.</span>":"<strong>Catalogue vide</strong><span>Cliquez sur « Ajouter un produit » pour créer la première fiche.</span>";return}
+    empty.hidden=true;
+    grid.innerHTML=list.map((p,i)=>{
+      const s=status(p);
+      const boite=n(p.prixM2HT)&&n(p.m2)?p.prixM2HT*p.m2*(1+TVA):null;
+      return `<button class="card" data-id="${esc(p.id)}" style="--i:${Math.min(i,20)}">
+        <span class="eyebrow"><span class="brand">${esc(p.marque)}</span>${pill(s)}</span>
+        <span class="serie">${esc(p.serie||"Sans nom")}</span>
+        <span class="fmt">${esc(p.format||"Format ?")}</span>
+        <span class="specs">
+          <span><span class="t">m² / boîte</span><span class="d">${num(p.m2,2)}</span></span>
+          <span><span class="t">kg / boîte</span><span class="d">${num(p.kg,2)}</span></span>
+          <span><span class="t">Pièces</span><span class="d">${n(p.pieces)?p.pieces:"—"}</span></span>
+        </span>
+        <span class="price"><span class="lbl">Prix boîte TTC</span>${boite?`<span class="val">${eur(boite)}</span>`:`<span class="val none">${s.k==="miss"?"Fiche incomplète":"Prix à saisir"}</span>`}</span>
+      </button>`}).join("");
+  }
+  function render(){renderStats();renderBrands();renderGrid();if(state.open)renderPanel()}
+
+  // Panneau
+  const panel=$("#panel"),scrim=$("#scrim");
+  function openPanel(id,edit){state.open=id;state.edit=!!edit;state.confirmDel=false;renderPanel();panel.classList.add("on");scrim.classList.add("on");panel.setAttribute("aria-hidden","false");setTimeout(()=>{(edit?$("#e-serie"):$("#close")).focus()},80)}
+  function closePanel(){state.open=null;state.edit=false;panel.classList.remove("on");scrim.classList.remove("on");panel.setAttribute("aria-hidden","true")}
+  const cur=()=>state.items.find(x=>x.id===state.open);
+
+  function renderPanel(){
+    const p=cur(); if(!p) return;
+    const s=status(p);
+    $("#pBrand").textContent=p.marque||""; $("#pTitle").textContent=p.serie||"Nouveau produit"; $("#pFmt").textContent=p.format||"Format ?"; $("#pStatus").innerHTML=pill(s);
+    if(document.activeElement&&document.activeElement.id==="prix"){updateCalc(p);return}
+    $("#pBody").innerHTML=state.edit?editView(p):readView(p);
+    if(!state.edit) updateCalc(p);
+  }
+
+  function readView(p){
+    const s=status(p);
+    const prix=n(p.prixM2HT)?p.prixM2HT:null;
+    const boiteHT=prix!=null&&n(p.m2)?prix*p.m2:null;
+    return `
+      <section class="sec woo">
+        <h3>À saisir dans WooCommerce</h3>
+        <div class="wrow"><div class="k">Poids<small>Champ « Poids (kg) » de la variation</small></div><div class="v">${num(p.kg,2)}</div><button class="copy" data-copy="${inNum(p.kg)}" ${n(p.kg)?"":"disabled"}>Copier</button></div>
+        <div class="wrow"><div class="k">Prix de la boîte HT<small>Champ « Tarif standard (€) »</small></div><div class="v" id="wPrix">${boiteHT!=null?num(boiteHT,2):"—"}</div><button class="copy" id="cPrix" data-copy="${boiteHT!=null?boiteHT.toFixed(2).replace(".",","):""}" ${boiteHT!=null?"":"disabled"}>Copier</button></div>
+        <div class="wrow"><div class="k">Surface par boîte<small>Champ « Surface par boîte (m²) »</small></div><div class="v">${num(p.m2,2)}</div><button class="copy" data-copy="${inNum(p.m2)}" ${n(p.m2)?"":"disabled"}>Copier</button></div>
+      </section>
+      <section class="sec">
+        <h3>Votre prix</h3>
+        <div class="field">
+          <label for="prix">Prix de vente au m² HT</label>
+          <div class="inwrap"><input id="prix" inputmode="decimal" placeholder="0,00" value="${prix!=null?num(prix,2).replace(/\s/g,""):""}"><span>€ HT / m²</span></div>
+          <div class="saved" id="saved">Enregistré automatiquement sur cet ordinateur.</div>
+        </div>
+        <dl class="calc" id="calc"></dl>
+      </section>
+      <section class="sec">
+        <button class="toggle" id="live" role="switch" aria-checked="${!!p.enLigne}">
+          <span><strong>Produit en ligne sur le site</strong><br><span style="font-size:13px;color:var(--muted)">À activer une fois la fiche publiée</span></span>
+          <span class="sw" aria-hidden="true"></span>
+        </button>
+      </section>
+      ${p.note?`<div class="note ${s.k==="miss"?"bad":""}">${esc(p.note)}</div>`:""}
+      <section class="sec">
+        <h3>Coloris disponibles</h3>
+        ${(p.coloris&&p.coloris.length)?`<div class="colors">${p.coloris.map(c=>`<span>${esc(c)}</span>`).join("")}</div>`:`<p style="margin:0;color:var(--muted)">Non renseigné.</p>`}
+      </section>
+      <section class="sec">
+        <h3>Fiche technique</h3>
+        <div class="tbl">
+          <div>Pièces par boîte</div><div>${n(p.pieces)?p.pieces:"—"}</div>
+          <div>Épaisseur</div><div>${n(p.epaisseur)?num(p.epaisseur,1)+" mm":"—"}</div>
+          <div>Finition</div><div>${esc(p.finition||"—")}</div>
+          <div>Usage</div><div>${esc(p.usage||"—")}</div>
+          <div>Antidérapant</div><div>${esc(p.glissance||"—")}</div>
+          <div>Poids au m²</div><div>${n(p.kg)&&n(p.m2)?num(p.kg/p.m2,1)+" kg":"—"}</div>
+        </div>
+      </section>
+      ${p.source?`<section class="sec src"><h3>Source</h3><a href="${esc(p.source)}" target="_blank" rel="noopener">Fiche du fabricant ↗</a></section>`:""}
+      <div class="actions"><button class="btn" id="doEdit">Modifier la fiche</button><button class="btn ghost" id="doDup">Dupliquer</button></div>`;
+  }
+
+  const FIELDS=[
+    ["marque","Marque","text"],["serie","Série","text"],["format","Format","text","Ex. 60x120 rectifié"],
+    ["coloris","Coloris","text","Séparés par des virgules"],
+    ["pieces","Pièces par boîte","num"],["m2","m² par boîte","num"],["kg","Poids d'une boîte (kg)","num"],["epaisseur","Épaisseur (mm)","num"],
+    ["finition","Finition","text"],["usage","Usage","text"],["glissance","Antidérapant","text"],
+    ["note","Remarque","area"],["source","Lien de la fiche fabricant","text"]
+  ];
+  function editView(p){
+    return `<form id="editForm" class="form" novalidate>
+      ${FIELDS.map(([k,l,t,ph])=>{
+        const v=k==="coloris"?(p.coloris||[]).join(", "):t==="num"?inNum(p[k]):(p[k]??"");
+        const wide=t==="area"||["coloris","note","source","serie","marque"].includes(k)?" wide":"";
+        return `<div class="field${wide}"><label for="e-${k}">${l}</label>${t==="area"?`<textarea id="e-${k}" rows="3">${esc(v)}</textarea>`:`<input id="e-${k}" ${t==="num"?'inputmode="decimal"':""} value="${esc(v)}" placeholder="${esc(ph||"")}">`}</div>`}).join("")}
+      <div class="err wide" id="err" role="alert"></div>
+      <div class="actions wide"><button class="btn" type="submit">Enregistrer</button><button class="btn ghost" type="button" id="cancelEdit">Annuler</button></div>
+      <div class="danger wide">${state.confirmDel?`<span>Supprimer définitivement cette fiche ?</span><button class="btn red" type="button" id="delYes">Oui, supprimer</button><button class="btn ghost" type="button" id="delNo">Non</button>`:`<button class="btn ghost redtxt" type="button" id="del">Supprimer la fiche</button>`}</div>
+    </form>`;
+  }
+
+  function updateCalc(p){
+    const prix=n(p.prixM2HT)?p.prixM2HT:null;
+    const has=prix!=null&&n(p.m2);
+    const c=$("#calc"); if(!c) return;
+    c.innerHTML=`<div><dt>m² TTC</dt><dd>${prix!=null?eur(prix*(1+TVA)):"—"}</dd></div>
+      <div><dt>Boîte TTC (client)</dt><dd>${has?eur(prix*p.m2*(1+TVA)):"—"}</dd></div>
+      <div><dt>Boîte HT</dt><dd>${has?eur(prix*p.m2):"—"}</dd></div>
+      <div><dt>Boîtes par tonne</dt><dd>${n(p.kg)&&p.kg>0?Math.floor(1000/p.kg)+" boîtes":"—"}</dd></div>`;
+    const w=$("#wPrix"),cp=$("#cPrix");
+    if(w&&cp){w.textContent=has?num(prix*p.m2,2):"—";cp.dataset.copy=has?(prix*p.m2).toFixed(2).replace(".",","):"";cp.disabled=!has}
+  }
+
+  // Événements
+  statsEl.addEventListener("click",e=>{const b=e.target.closest("[data-s]");if(!b)return;state.status=b.dataset.s;renderStats();renderGrid()});
+  brandsEl.addEventListener("click",e=>{const b=e.target.closest("[data-b]");if(!b)return;state.brand=b.dataset.b;renderBrands();renderGrid()});
+  $("#q").addEventListener("input",e=>{state.q=e.target.value;renderGrid()});
+  grid.addEventListener("click",e=>{const c=e.target.closest(".card");if(c)openPanel(c.dataset.id)});
+  $("#close").addEventListener("click",closePanel); scrim.addEventListener("click",closePanel);
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&state.open)closePanel()});
+
+  const toast=$("#toast"); let tt;
+  function say(t){toast.textContent=t;toast.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>toast.classList.remove("on"),2000)}
+  function persist(msg){ if(save()){ if(msg) say(msg) } else say("Enregistrement impossible : le navigateur bloque le stockage local.") }
+
+  $("#add").addEventListener("click",()=>{
+    const id="p-"+Date.now().toString(36);
+    state.items.push({id,ordre:state.items.length+1,marque:state.brand!=="Toutes"?state.brand:"",serie:"",format:"",coloris:[],pieces:null,m2:null,kg:null,epaisseur:null,finition:"",usage:"",glissance:"",note:null,source:"",prixM2HT:null,enLigne:false});
+    persist(); state.status="all"; render(); openPanel(id,true);
+  });
+
+  const pb=$("#pBody");
+  pb.addEventListener("click",async e=>{
+    const t=e.target;
+    const c=t.closest(".copy");
+    if(c&&!c.disabled){
+      const v=c.dataset.copy;
+      try{await navigator.clipboard.writeText(v);c.textContent="Copié";c.classList.add("done");say("Copié : "+v);setTimeout(()=>{c.textContent="Copier";c.classList.remove("done")},1400)}
+      catch(_){say("Copie impossible ici. Valeur : "+v)}
+      return;
+    }
+    const p=cur(); if(!p) return;
+    if(t.closest("#live")){p.enLigne=!p.enLigne;persist(p.enLigne?"Marqué en ligne":"Retiré de la liste en ligne");render();return}
+    if(t.closest("#doEdit")){state.edit=true;state.confirmDel=false;renderPanel();setTimeout(()=>$("#e-serie")&&$("#e-serie").focus(),30);return}
+    if(t.closest("#doDup")){const id="p-"+Date.now().toString(36);const copy=JSON.parse(JSON.stringify(p));copy.id=id;copy.enLigne=false;copy.ordre=state.items.length+1;copy.format=(p.format||"")+" (copie)";state.items.push(copy);persist("Fiche dupliquée");render();openPanel(id,true);return}
+    if(t.closest("#cancelEdit")){if(!p.serie&&!p.marque&&!n(p.kg)){state.items=state.items.filter(x=>x.id!==p.id);persist();closePanel();render();return}state.edit=false;renderPanel();return}
+    if(t.closest("#del")){state.confirmDel=true;renderPanel();return}
+    if(t.closest("#delNo")){state.confirmDel=false;renderPanel();return}
+    if(t.closest("#delYes")){state.items=state.items.filter(x=>x.id!==p.id);persist("Fiche supprimée");closePanel();render();return}
+  });
+  pb.addEventListener("submit",e=>{
+    e.preventDefault();
+    const p=cur(); if(!p) return;
+    const next={};
+    for(const [k,l,t] of FIELDS){
+      const el=$("#e-"+k); const v=el.value.trim();
+      if(t==="num"){const x=toNum(v);if(Number.isNaN(x)){$("#err").textContent=`« ${l} » doit être un nombre, par exemple 1,44.`;el.focus();return}next[k]=x}
+      else if(k==="coloris"){next[k]=v?v.split(",").map(s=>s.trim()).filter(Boolean):[]}
+      else next[k]=v||(k==="note"?null:"");
+    }
+    if(!next.serie){$("#err").textContent="Donnez au moins un nom de série.";$("#e-serie").focus();return}
+    Object.assign(p,next); state.edit=false; persist("Fiche enregistrée"); render();
+  });
+  let saveT;
+  pb.addEventListener("input",e=>{
+    if(e.target.id!=="prix") return;
+    const p=cur(); if(!p) return;
+    const v=toNum(e.target.value);
+    if(Number.isNaN(v)){$("#saved").textContent="Saisissez un nombre, par exemple 32,50.";return}
+    p.prixM2HT=v; updateCalc(p); renderStats(); renderGrid();
+    clearTimeout(saveT); saveT=setTimeout(()=>{$("#saved").textContent=save()?"Enregistré sur cet ordinateur.":"Enregistrement impossible : stockage local bloqué."},400);
+  });
+
+  // Sauvegarde fichier
+  $("#export").addEventListener("click",()=>{
+    const blob=new Blob([JSON.stringify(state.items,null,2)],{type:"application/json"});
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+    const d=new Date();a.download=`catalogue-carrelage-selection-${d.toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);say("Sauvegarde téléchargée");
+  });
+  $("#importBtn").addEventListener("click",()=>$("#importFile").click());
+  $("#importFile").addEventListener("change",e=>{
+    const f=e.target.files[0]; if(!f) return;
+    const r=new FileReader();
+    r.onload=()=>{try{const d=JSON.parse(r.result);if(!Array.isArray(d)||!d.every(x=>x&&x.id))throw 0;state.items=d;persist(`${d.length} produits importés`);closePanel();render()}catch(_){say("Fichier non reconnu. Choisissez une sauvegarde .json de ce catalogue.")}e.target.value=""};
+    r.readAsText(f);
+  });
+
+  state.items=load(); render();
+  try{localStorage.setItem(KEY+"-t","1");localStorage.removeItem(KEY+"-t")}catch(_){say("Stockage local bloqué : vos modifications ne seront pas gardées.")}
+})();
+
+</script>
+</body>
+</html>

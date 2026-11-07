@@ -166,6 +166,17 @@ aside.panel.on{transform:none}
 .pw{position:relative;display:flex}.pw input{flex:1;padding-right:52px;min-width:0}
 .eye{position:absolute;right:0;top:0;height:100%;width:48px;border:0;background:none;color:var(--muted);cursor:pointer;display:grid;place-items:center}
 .eye[aria-pressed="true"]{color:var(--fg)}
+@media (max-width:760px){
+  header.top{position:static;padding-block:14px 12px;gap:12px}
+  .sub{font-size:11px}
+  .tools{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%}
+  .tools .btn{height:38px;padding:0 10px;font-size:13px}
+  .tools #add{grid-column:1 / -1}
+  .search{max-width:none;flex-basis:100%}
+  .stats{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:6px}
+  .stats::-webkit-scrollbar{display:none}
+  .stat{flex:0 0 auto;padding:8px 12px;gap:12px}
+}
 </style>
 </head>
 <body>

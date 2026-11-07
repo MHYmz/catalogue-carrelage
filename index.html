@@ -162,6 +162,10 @@ aside.panel.on{transform:none}
 .who{font-size:12.5px;color:var(--muted)}
 .moved{background:var(--fg);color:var(--bg);padding:12px 16px;font-size:14px;text-align:center}.moved a{color:inherit;font-weight:700}
 .trashbox{background:rgba(0,0,0,.5)}.trashbox .codecard{background:var(--bg)}
+
+.pw{position:relative;display:flex}.pw input{flex:1;padding-right:52px;min-width:0}
+.eye{position:absolute;right:0;top:0;height:100%;width:48px;border:0;background:none;color:var(--muted);cursor:pointer;display:grid;place-items:center}
+.eye[aria-pressed="true"]{color:var(--fg)}
 </style>
 </head>
 <body>
@@ -325,8 +329,9 @@ aside.panel.on{transform:none}
     let m=document.getElementById("codeBox");
     if(!m){
       m=document.createElement("div");m.id="codeBox";m.className="codebox";
-      m.innerHTML=`<form class="codecard"><div class="logo" aria-hidden="true">CS</div><h2>Catalogue partagé</h2><p>Entrez votre prénom et le code d'accès de l'équipe. Demandé une seule fois sur cet ordinateur.</p><input id="nomIn" autocomplete="given-name" placeholder="Votre prénom" value="${esc(nom())}"><input id="codeIn" autocomplete="off" placeholder="Code d'accès" value="${esc(code())}"><div class="err" id="codeErr"></div><button class="btn" type="submit">Accéder au catalogue</button></form>`;
+      m.innerHTML=`<form class="codecard"><div class="logo" aria-hidden="true">CS</div><h2>Catalogue partagé</h2><p>Entrez votre prénom et le code d'accès de l'équipe. Demandé une seule fois sur cet ordinateur.</p><input id="nomIn" autocomplete="given-name" placeholder="Votre prénom" value="${esc(nom())}"><div class="pw"><input id="codeIn" type="password" autocomplete="current-password" placeholder="Code d'accès" value="${esc(code())}"><button type="button" class="eye" id="eye" aria-label="Afficher le code" aria-pressed="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div><div class="err" id="codeErr"></div><button class="btn" type="submit">Accéder au catalogue</button></form>`;
       document.body.appendChild(m);
+      m.querySelector("#eye").addEventListener("click",ev=>{const i=m.querySelector("#codeIn"),b=ev.currentTarget,show=i.type==="password";i.type=show?"text":"password";b.setAttribute("aria-pressed",String(show));b.setAttribute("aria-label",show?"Masquer le code":"Afficher le code");i.focus()});
       m.querySelector("form").addEventListener("submit",async e=>{
         e.preventDefault(); const v=m.querySelector("#codeIn").value.trim(), np=m.querySelector("#nomIn").value.trim();
         if(!np){m.querySelector("#codeErr").textContent="Indiquez votre prénom.";return}
@@ -361,6 +366,21 @@ aside.panel.on{transform:none}
     });
   }
   trashBtn.addEventListener("click",openTrash);
+
+  // Déconnexion
+  const outBtn=document.createElement("button"); outBtn.className="btn ghost"; outBtn.id="logout"; outBtn.textContent="Se déconnecter"; outBtn.hidden=true;
+  outBtn.addEventListener("click",async()=>{
+    outBtn.disabled=true;
+    if(Object.keys(pending).length) await flush();
+    outBtn.disabled=false;
+    const nb=Object.keys(pending).length;
+    if(nb){say(`${nb} modification${nb>1?"s":""} pas encore envoyée${nb>1?"s":""}. Vérifiez la connexion internet, puis réessayez.`);return}
+    ls.del(CKEY); ls.del(NKEY); ls.del(KEY); ls.del(PKEY);
+    closePanel(); const tb=document.getElementById("trashBox"); if(tb)tb.remove();
+    state.items=[]; trash=[]; render(); setSync("code"); paintSync();
+    const old=document.getElementById("codeBox"); if(old)old.remove();
+    askCode(false); say("Vous êtes déconnecté.");
+  });
 
   function status(p){
     if(p.enLigne) return {k:"live",t:"En ligne",c:"s-live"};
@@ -585,6 +605,7 @@ aside.panel.on{transform:none}
   state.items=load(); render();
   document.querySelector(".sub").after(syncEl); paintSync();
   $("#importBtn").after(trashBtn); paintTrash();
+  trashBtn.after(outBtn); outBtn.hidden=!SHARED;
   if(NEW_URL&&location.hostname.endsWith("github.io")){const b=document.createElement("div");b.className="moved";b.innerHTML=`Cette adresse n'est plus mise à jour. Utilisez le catalogue partagé : <a href="${NEW_URL}">${NEW_URL.replace(/^https?:\/\//,"")}</a>`;document.body.prepend(b)}
   if(SHARED){
     if(!code())askCode(false); else {pull(true);flush()}

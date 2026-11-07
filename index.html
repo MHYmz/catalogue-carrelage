@@ -258,7 +258,7 @@ aside.panel.on{transform:none}
   }
 
   // ---------- Synchronisation partagée (Google Sheet) ----------
-  const API_URL="/api/produits", NEW_URL="";
+  const API_URL="/api/produits", NEW_URL="https://catalogue-carrelage.vercel.app";
   const SHARED=/^https?:$/.test(location.protocol)&&!location.hostname.endsWith("github.io");
   const CKEY="cs-code", NKEY="cs-nom", PKEY="cs-pending";
   const ls={get(k){try{return localStorage.getItem(k)}catch(_){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(_){}},del(k){try{localStorage.removeItem(k)}catch(_){}}};

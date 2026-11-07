@@ -580,7 +580,7 @@ aside.panel.on{transform:none}
     const p=cur(); if(!p) return;
     const v=toNum(e.target.value);
     if(Number.isNaN(v)){$("#saved").textContent="Saisissez un nombre, par exemple 32,50.";return}
-    p.prixM2HT=v; updateCalc(p); renderStats(); renderGrid();
+    p.prixM2HT=v; updateCalc(p); renderStats(); renderGrid(); $("#pStatus").innerHTML=pill(status(p));
     clearTimeout(saveT); saveT=setTimeout(()=>{const ok=save();track(p);$("#saved").textContent=!ok?"Enregistrement impossible : stockage local bloqué.":SHARED?"Enregistré et partagé avec l'équipe.":"Enregistré sur cet ordinateur.";},400);
   });
 
